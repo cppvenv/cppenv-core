@@ -67,3 +67,15 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# JetBrains IDEs
+.idea/
+cmake-build-*/
+*.iws
+out/
+
+# OS specific files
+.DS_Store
+
+# resulting dependencies
+deps/
