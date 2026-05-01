@@ -1,0 +1,74 @@
+# Doxyfile.in — processed by CMake's configure_file(@ONLY).
+# All @VARIABLE@ tokens are substituted at configure time.
+# Do not run Doxygen directly against this file — use the CMake `docs` target.
+
+#---------------------------------------------------------------------------
+# Project
+#---------------------------------------------------------------------------
+PROJECT_NAME    = "cppenv-core"
+PROJECT_NUMBER  = @PROJECT_VERSION@
+PROJECT_BRIEF   = "Shared C++ foundation for the cppenv CLI and server"
+PROJECT_LOGO    =
+
+#---------------------------------------------------------------------------
+# Input
+# Include headers only; src/ is private implementation detail.
+# deps/ and build/ are excluded to avoid documenting vendored code.
+#---------------------------------------------------------------------------
+INPUT           = @CMAKE_CURRENT_SOURCE_DIR@/include \
+                  @CMAKE_CURRENT_SOURCE_DIR@/src
+RECURSIVE       = YES
+FILE_PATTERNS   = *.hpp *.h *.cpp
+EXCLUDE_PATTERNS = */deps/* \
+                   */build/* \
+                   */.git/*
+
+#---------------------------------------------------------------------------
+# Output — XML only.
+# Breathe reads the XML and exposes it as Sphinx directives.
+# Generating Doxygen HTML as well would be redundant and slower.
+#---------------------------------------------------------------------------
+OUTPUT_DIRECTORY    = @DOXYGEN_OUTPUT_DIR@
+GENERATE_HTML       = NO
+GENERATE_LATEX      = NO
+GENERATE_XML        = YES
+XML_OUTPUT          = xml
+# Suppress per-file source listings in the XML — keeps output small and
+# avoids duplicating source in the Sphinx build artefact.
+XML_PROGRAMLISTING  = NO
+
+#---------------------------------------------------------------------------
+# Extraction — document everything, not only explicitly commented items.
+# EXTRACT_ALL lets Breathe show undocumented members as stubs so the API
+# surface is visible even before every symbol has a doc comment.
+# Flip to NO once coverage is high enough that stubs add no value.
+#---------------------------------------------------------------------------
+EXTRACT_ALL         = YES
+EXTRACT_PRIVATE     = NO
+EXTRACT_STATIC      = YES
+EXTRACT_ANON_NSPACES = NO
+
+#---------------------------------------------------------------------------
+# Preprocessing — needed to expand CPPENV_ macros correctly.
+#---------------------------------------------------------------------------
+ENABLE_PREPROCESSING = YES
+MACRO_EXPANSION      = YES
+EXPAND_ONLY_PREDEF   = NO
+
+#---------------------------------------------------------------------------
+# Dot / graphs — disabled.
+# Breathe and sphinx-design handle diagrams where needed; Doxygen dot graphs
+# are not worth the Graphviz dependency for a project at this stage.
+#---------------------------------------------------------------------------
+HAVE_DOT = NO
+
+#---------------------------------------------------------------------------
+# Warnings
+# WARN_IF_UNDOCUMENTED is OFF while the codebase is in early development.
+# Turn it on before a public release to enforce doc coverage.
+#---------------------------------------------------------------------------
+QUIET                   = YES
+WARNINGS                = YES
+WARN_IF_UNDOCUMENTED    = NO
+WARN_IF_DOC_ERROR       = YES
+WARN_NO_PARAMDOC        = NO

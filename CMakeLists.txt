@@ -17,6 +17,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Dependencies)
+include(DoxygenTarget)
 
 #add_library(cppenv-core-warnings INTERFACE)
 #target_compile_options(cppenv-core-warnings INTERFACE

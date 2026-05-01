@@ -1,0 +1,6 @@
+sphinx>=7.0
+furo>=2024.1
+breathe>=4.35
+sphinx-copybutton
+sphinx-design
+sphinxcontrib-moderncmakedomain

@@ -1,0 +1,92 @@
+# conf.py.in — processed by CMake's configure_file(@ONLY).
+# All @VARIABLE@ tokens are substituted at configure time.
+# The generated conf.py lands in CMAKE_CURRENT_BINARY_DIR/docs/
+# so Sphinx is invoked as: sphinx-build -c <binary>/docs docs/ <output>/
+
+# ---------------------------------------------------------------------------
+# Project metadata
+# ---------------------------------------------------------------------------
+project   = "cppenv-core"
+author    = "Nikola Radovanovic"
+release   = "@PROJECT_VERSION@"
+copyright = "2024, Nikola Radovanovic"
+
+# ---------------------------------------------------------------------------
+# Extensions
+#
+# breathe                          — reads Doxygen XML, exposes C++ API as
+#                                    Sphinx directives
+# sphinxcontrib.moderncmakedomain  — reads CMake #[=======[.rst:...]=======]
+#                                    bracket comments via `.. cmake-module::`
+#                                    directive; same package CMake itself uses
+#                                    for its own documentation
+# sphinx_copybutton                — copy button on code blocks
+# sphinx_design                    — cards, grids, tabs, badges
+# ---------------------------------------------------------------------------
+extensions = [
+    "breathe",
+    "sphinxcontrib.moderncmakedomain",
+    "sphinx_copybutton",
+    "sphinx_design",
+]
+
+# ---------------------------------------------------------------------------
+# Breathe — point at the Doxygen XML output directory.
+# CMAKE_CURRENT_BINARY_DIR/doxygen/xml is where DoxygenTarget.cmake
+# places the XML files.
+# ---------------------------------------------------------------------------
+breathe_projects = {
+    "cppenv-core": "@DOXYGEN_OUTPUT_DIR@/xml",
+}
+breathe_default_project = "cppenv-core"
+
+# Render C++ API with full type information and parameter docs.
+# "doxygenclass" directive will use these defaults.
+breathe_default_members = ("members", "undoc-members")
+
+# ---------------------------------------------------------------------------
+# HTML output — Furo theme
+#
+# Furo was chosen over Read the Docs theme because:
+# - Light + dark mode out of the box, no config needed
+# - Sidebar stays visible while scrolling long API pages
+# - Better search UX (highlights match in result snippet)
+# - Handles both API reference and narrative docs without ugly hacks
+# ---------------------------------------------------------------------------
+html_theme = "furo"
+html_title = "cppenv-core"
+
+html_theme_options = {
+    # Sidebar logo / wordmark area.  Leave source_repository empty until
+    # the repo is public so we don't expose a private URL in built docs.
+    # "source_repository": "https://github.com/cppvenv/cppenv-core",
+    # "source_branch": "main",
+    # "source_directory": "docs/",
+}
+
+# Static assets (custom CSS, favicon) go here once they exist.
+# html_static_path = ["_static"]
+# html_favicon = "_static/favicon.ico"
+
+# ---------------------------------------------------------------------------
+# Source suffix and master doc
+# ---------------------------------------------------------------------------
+source_suffix = ".rst"
+master_doc    = "index"
+
+# ---------------------------------------------------------------------------
+# Exclusions
+# ---------------------------------------------------------------------------
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+]
+
+# ---------------------------------------------------------------------------
+# intersphinx — link to external API docs (add as needed)
+# ---------------------------------------------------------------------------
+# extensions.append("sphinx.ext.intersphinx")
+# intersphinx_mapping = {
+#     "python": ("https://docs.python.org/3", None),
+# }
