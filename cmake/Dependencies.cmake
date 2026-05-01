@@ -6,7 +6,7 @@ Declares and builds all third-party dependencies for ``cppenv-core``.
 
 This is the only file that needs editing when adding, removing, or
 upgrading a dependency. Build machinery lives in ``BuildDepsCore`` and
-``BuildDepsSpecial`` — do not duplicate it here.
+``BuildDepsDatabase`` — do not duplicate it here.
 
 Tarballs are resolved in this order:
 
@@ -21,18 +21,18 @@ For offline builds or faster CI, pre-download tarballs into ``deps/``:
 .. code-block:: bash
 
    mkdir -p deps/
-   wget -O deps/fmt-10.2.1.tar.gz \
-       https://github.com/fmtlib/fmt/archive/refs/tags/10.2.1.tar.gz
-   wget -O deps/spdlog-1.12.0.tar.gz \
-       https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz
-   wget -O deps/json-3.11.2.tar.gz \
-       https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+   wget -O deps/fmt-12.1.0.tar.gz \
+       https://github.com/fmtlib/fmt/archive/refs/tags/12.1.0.tar.gz
+   wget -O deps/spdlog-1.17.0.tar.gz \
+       https://github.com/gabime/spdlog/archive/refs/tags/v1.17.0.tar.gz
+   wget -O deps/json-3.12.0.tar.gz \
+       https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
    wget -O deps/cli11-2.6.2.tar.gz \
        https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.6.2.tar.gz
    wget -O deps/yaml-cpp-0.9.0.tar.gz \
        https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.9.0.tar.gz
-   wget -O deps/libarchive-3.7.2.tar.gz \
-       https://github.com/libarchive/libarchive/archive/refs/tags/v3.7.2.tar.gz
+   wget -O deps/libarchive-3.8.7.tar.gz \
+       https://github.com/libarchive/libarchive/archive/refs/tags/v3.8.7.tar.gz
 
 CMake options
 ^^^^^^^^^^^^^
@@ -50,7 +50,7 @@ CMake options
 
 include_guard(GLOBAL)
 
-include(BuildDepsCore)
+include(${CMAKE_CURRENT_LIST_DIR}/BuildDepsDatabase.cmake)
 
 option(BUILD_DEPS "Force rebuild of all dependencies" OFF)
 
@@ -63,18 +63,14 @@ if(BUILD_DEPS)
     file(REMOVE_RECURSE ${PROJECT_SOURCE_DIR}/build/_deps)
 endif()
 
-#set(ENV{PKG_CONFIG_PATH} "${OUTPUT_LIB_DIR}/pkgconfig")
-#list(APPEND CMAKE_PREFIX_PATH  "${OUTPUT_LIB_DIR}/cmake")
-#list(APPEND CMAKE_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/deps/include")
-
 # ---------------------------------------------------------------------------
 # fmt — string formatting library, required by spdlog
 # ---------------------------------------------------------------------------
 build_dep_cmake(
     NAME        fmt
-    VERSION     10.2.1
-    HASH        SHA256=1250e4cc58bf06ee631567523f48848dc4596133e163f02615c97f78bab6c811
-    URL         https://github.com/fmtlib/fmt/archive/refs/tags/10.2.1.tar.gz
+    VERSION     12.1.0
+    HASH        SHA256=ea7de4299689e12b6dddd392f9896f08fb0777ac7168897a244a6d6085043fea
+    URL         https://github.com/fmtlib/fmt/archive/refs/tags/12.1.0.tar.gz
     BUILD_OPTS
         -DBUILD_SHARED_LIBS=ON
         -DFMT_TEST=OFF
@@ -83,12 +79,14 @@ build_dep_cmake(
 # ---------------------------------------------------------------------------
 # spdlog — structured logging with multiple sinks
 # Built against the external fmt installed above (SPDLOG_FMT_EXTERNAL=ON)
+# spdlog 1.17.0 bundles fmt 12.1.0 internally — using SPDLOG_FMT_EXTERNAL
+# ensures it links against our pinned fmt instead of its own copy.
 # ---------------------------------------------------------------------------
 build_dep_cmake(
     NAME        spdlog
-    VERSION     1.12.0
-    HASH        SHA256=4dccf2d10f410c1e2feaff89966bfc49a1abb29ef6f08246335b110e001e09a9
-    URL         https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz
+    VERSION     1.17.0
+    HASH        SHA256=d8862955c6d74e5846b3f580b1605d2428b11d97a410d86e2fb13e857cd3a744
+    URL         https://github.com/gabime/spdlog/archive/refs/tags/v1.17.0.tar.gz
     BUILD_OPTS
         -DSPDLOG_BUILD_SHARED=ON
         -DSPDLOG_BUILD_PIC=ON
@@ -101,10 +99,10 @@ build_dep_cmake(
 # ---------------------------------------------------------------------------
 build_dep_cmake(
     NAME        json
-    VERSION     3.11.2
+    VERSION     3.12.0
     PKG_NAME    nlohmann_json
-    HASH        SHA256=d69f9deb6a75e2580465c6c4c5111b89c4dc2fa94e3a85fcd2ffcd9a143d9273
-    URL         https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
+    HASH        SHA256=4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187
+    URL         https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
     BUILD_OPTS
         -DJSON_BuildTests=OFF
         -DJSON_Install=ON
@@ -145,6 +143,22 @@ build_dep_cmake(
 )
 
 # ---------------------------------------------------------------------------
+# openssl — TLS for HTTPS bundle downloads, server connections, and
+# bundle signature verification. libarchive and libpq also link against it,
+# so it must be declared before both.
+# ---------------------------------------------------------------------------
+build_openssl(
+    NAME        openssl
+    VERSION     3.6.2
+    PKG_NAME    openssl
+    HASH        SHA256=aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04f
+    URL         https://github.com/openssl/openssl/releases/download/openssl-3.6.2/openssl-3.6.2.tar.gz
+    BUILD_OPTS
+        shared
+        no-tests
+)
+
+# ---------------------------------------------------------------------------
 # libarchive — bundle archive creation (.tar.gz) and extraction
 #
 # Bundles are .tar.gz only by design (see bundle-format spec). libarchive's
@@ -157,9 +171,10 @@ build_dep_cmake(
 # ---------------------------------------------------------------------------
 build_dep_cmake(
     NAME        libarchive
-    VERSION     3.7.2
-    HASH        SHA256=63b40acff57467f7d3a64981d4bcff60b52f539fae7688aaaaee27a448b10266
-    URL         https://github.com/libarchive/libarchive/archive/refs/tags/v3.7.2.tar.gz
+    VERSION     3.8.7
+    HASH        SHA256=bc942030fe7cb30e04eed31bd5f63c38cdfd712315b303e91b64e58f05db2346
+    URL         https://github.com/libarchive/libarchive/archive/refs/tags/v3.8.7.tar.gz
+    USE_PKGCONFIG
     BUILD_OPTS
         -DBUILD_SHARED_LIBS=ON
         -DENABLE_TEST=OFF
@@ -167,7 +182,7 @@ build_dep_cmake(
         -DENABLE_CPIO=OFF
         -DENABLE_CAT=OFF
         -DENABLE_ZLIB=ON
-        -DENABLE_OPENSSL=OFF
+        -DENABLE_OPENSSL=ON
         -DENABLE_LIBXML2=OFF
         -DENABLE_EXPAT=OFF
         -DENABLE_PCREPOSIX=OFF
@@ -176,6 +191,19 @@ build_dep_cmake(
         -DENABLE_BZip2=OFF
         -DENABLE_LZ4=OFF
         -DENABLE_ZSTD=OFF
+)
+
+# ---------------------------------------------------------------------------
+# sqlite3 — embedded relational store for user-level (~/.cppenv/cppenv.db)
+# and project-level (cppvenv/.cppenv.db) databases, accessed via sqlite_orm.
+# FTS5 is enabled for full-text search.
+# ---------------------------------------------------------------------------
+build_sqlite3(
+    NAME        sqlite3
+    VERSION     3.53.0
+    PKG_NAME    sqlite3
+    HASH        SHA256=851e9b38192fe2ceaa65e0baa665e7fa06230c3d9bd1a6a9662d02380d73365a
+    URL         https://www.sqlite.org/2026/sqlite-autoconf-3530000.tar.gz
 )
 
 file(REMOVE_RECURSE "${PROJECT_SOURCE_DIR}/deps/share")
