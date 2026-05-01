@@ -133,8 +133,10 @@ function(build_postgres_cli)
 
     set(DEP_SRC_DIR ${${DEP_NAME}_SOURCE_DIR})
 
-    set(ENV{CC}  ${CMAKE_C_COMPILER})
-    set(ENV{CXX} ${CMAKE_CXX_COMPILER})
+    set(ENV{CC}       ${CMAKE_C_COMPILER})
+    set(ENV{CXX}      ${CMAKE_CXX_COMPILER})
+    set(ENV{CPPFLAGS} "-I${PROJECT_SOURCE_DIR}/deps/include")
+    set(ENV{LDFLAGS}  "-L${OUTPUT_LIB_DIR}")
 
     _cppenv_run_cmd("${DEP_NAME} configure"
         ${DEP_SRC_DIR}/configure
@@ -146,9 +148,12 @@ function(build_postgres_cli)
 
     unset(ENV{CC})
     unset(ENV{CXX})
+    unset(ENV{CPPFLAGS})
+    unset(ENV{LDFLAGS})
 
+    # -j is intentionally absent: parallel jobs race
     _cppenv_run_cmd("${DEP_NAME} install bin"
-        make -j${NCPUS} -C src/bin install
+        make -C src/bin install
         WORKING_DIRECTORY ${DEP_SRC_DIR}
     )
 
