@@ -33,13 +33,6 @@ relocation), and the database abstraction layer.
       Getting started, bundle format internals, CMake integration, and
       the activation workflow.
 
-   .. grid-item-card:: Server
-      :link: server/index
-      :link-type: doc
-
-      Deployment, REST API reference, self-hosting, and storage backend
-      configuration.
-
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -47,4 +40,3 @@ relocation), and the database abstraction layer.
    api/index
    cmake/index
    guides/index
-   server/index
