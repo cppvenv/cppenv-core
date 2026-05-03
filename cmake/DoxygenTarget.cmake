@@ -54,14 +54,11 @@ if(NOT BUILD_DOCS)
 endif()
 
 # ---------------------------------------------------------------------------
-# Doxygen
+# Doxygen + Graphviz
+# dot is required for class and inheritance diagrams (HAVE_DOT = YES in
+# Doxyfile.in). Install Graphviz before enabling BUILD_DOCS.
 # ---------------------------------------------------------------------------
-find_package(Doxygen REQUIRED
-    OPTIONAL_COMPONENTS dot
-)
-# Dot (Graphviz) is intentionally optional: we disable graph generation in
-# Doxyfile.in (HAVE_DOT = NO), but find_package still tries to find it.
-# OPTIONAL_COMPONENTS silences the "dot not found" warning.
+find_package(Doxygen REQUIRED dot)
 
 # ---------------------------------------------------------------------------
 # Sphinx

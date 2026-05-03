@@ -11,6 +11,12 @@ Prerequisites
 - Perl (required by OpenSSL's configure script)
 - pkg-config
 
+Building documentation requires additional tools:
+
+- Python 3 with ``pip install -r docs/requirements-docs.txt``
+- Graphviz (for class and call graphs) — ``brew install graphviz`` on macOS,
+  ``apt install graphviz`` on Debian/Ubuntu
+
 Building cppenv-core standalone
 --------------------------------
 

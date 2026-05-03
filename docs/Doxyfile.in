@@ -56,11 +56,20 @@ MACRO_EXPANSION      = YES
 EXPAND_ONLY_PREDEF   = NO
 
 #---------------------------------------------------------------------------
-# Dot / graphs — disabled.
-# Breathe and sphinx-design handle diagrams where needed; Doxygen dot graphs
-# are not worth the Graphviz dependency for a project at this stage.
+# Dot / graphs — Graphviz required.
+# Class diagrams and inheritance graphs are generated via dot. Graphviz must
+# be installed and dot must be on PATH; the CMake docs target enforces this.
 #---------------------------------------------------------------------------
-HAVE_DOT = NO
+HAVE_DOT                = YES
+DOT_NUM_THREADS         = 0
+CLASS_DIAGRAMS          = YES
+CLASS_GRAPH             = YES
+COLLABORATION_GRAPH     = YES
+INCLUDE_GRAPH           = YES
+INCLUDED_BY_GRAPH       = YES
+CALL_GRAPH              = YES
+CALLER_GRAPH            = YES
+DOT_IMAGE_FORMAT        = png
 
 #---------------------------------------------------------------------------
 # Warnings

@@ -33,6 +33,8 @@ For offline builds or faster CI, pre-download tarballs into ``deps/``:
        https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.9.0.tar.gz
    wget -O deps/libarchive-3.8.7.tar.gz \
        https://github.com/libarchive/libarchive/archive/refs/tags/v3.8.7.tar.gz
+   wget -O deps/googletest-1.14.0.tar.gz \
+       https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
 
 CMake options
 ^^^^^^^^^^^^^
@@ -204,6 +206,23 @@ build_sqlite3(
     PKG_NAME    sqlite3
     HASH        SHA256=851e9b38192fe2ceaa65e0baa665e7fa06230c3d9bd1a6a9662d02380d73365a
     URL         https://www.sqlite.org/2026/sqlite-autoconf-3530000.tar.gz
+)
+
+# ---------------------------------------------------------------------------
+# googletest — unit testing framework.
+# Always built so GTest::gtest and GTest::gmock targets are available in
+# deps/ for tests in core, server, and CLI. Whether test binaries are
+# compiled is controlled per-repo via BUILD_TESTING.
+# ---------------------------------------------------------------------------
+build_dep_cmake(
+    NAME        googletest
+    VERSION     1.14.0
+    PKG_NAME    GTest
+    HASH        SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7
+    URL         https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+    BUILD_OPTS
+        -DBUILD_GMOCK=ON
+        -DINSTALL_GTEST=ON
 )
 
 file(REMOVE_RECURSE "${PROJECT_SOURCE_DIR}/deps/share")
