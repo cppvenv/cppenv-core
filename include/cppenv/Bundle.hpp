@@ -11,4 +11,6 @@
  * the full set.
  */
 
-#include <cppenv/bundles/BundleId.hpp>
+#include <cppenv/bundle/BundleId.hpp>
+#include <cppenv/bundle/BundleRecord.hpp>
+#include <cppenv/bundle/BundleFilter.hpp>

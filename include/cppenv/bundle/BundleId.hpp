@@ -18,7 +18,7 @@
  * @endcode
  */
 
-#include <cppenv/exceptions/InvalidRequestException.hpp>
+#include <cppenv/exception/InvalidRequestException.hpp>
 
 #include <string>
 

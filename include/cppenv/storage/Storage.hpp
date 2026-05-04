@@ -16,7 +16,7 @@
  * layer above.
  */
 
-#include <cppenv/exceptions/StorageException.hpp>
+#include <cppenv/exception/StorageException.hpp>
 
 #include <istream>
 #include <memory>
