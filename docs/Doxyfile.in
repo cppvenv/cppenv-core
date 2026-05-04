@@ -43,9 +43,10 @@ XML_PROGRAMLISTING  = NO
 # surface is visible even before every symbol has a doc comment.
 # Flip to NO once coverage is high enough that stubs add no value.
 #---------------------------------------------------------------------------
-EXTRACT_ALL         = YES
-EXTRACT_PRIVATE     = NO
-EXTRACT_STATIC      = YES
+EXTRACT_ALL          = YES
+EXTRACT_PRIVATE      = YES
+EXTRACT_STATIC       = YES
+EXTRACT_PRIV_VIRTUAL = YES
 EXTRACT_ANON_NSPACES = NO
 
 #---------------------------------------------------------------------------
